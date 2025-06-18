@@ -6,7 +6,7 @@ api_key = st.secrets.get("openai_api_key", "YOUR_OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # Your fine-tuned model name
-FINE_TUNED_MODEL = "ft:gpt-3.5-turbo:your-org:adam01"
+FINE_TUNED_MODEL = "ft:gpt-3.5-turbo-1106:affiliation:adam01:BjSEqqXj"
 
 st.title("📝 Rewrite in Adam's Tone and Voice")
 st.write("Upload a file or paste content to have it rewritten by Adam's fine-tuned GPT model.")
