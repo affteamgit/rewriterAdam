@@ -1,8 +1,9 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
-# Set your OpenAI API key here or use Streamlit secrets
-openai.api_key = st.secrets.get("openai_api_key", "YOUR_OPENAI_API_KEY")
+# Load your API key from Streamlit secrets
+api_key = st.secrets.get("openai_api_key", "YOUR_OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 # Your fine-tuned model name
 FINE_TUNED_MODEL = "ft:gpt-3.5-turbo:your-org:adam01"
@@ -28,7 +29,7 @@ if content:
     if st.button("Rewrite in Adam's Voice"):
         with st.spinner("Rewriting with Adam's tone and style..."):
             try:
-                response = openai.ChatCompletion.create(
+                response = client.chat.completions.create(
                     model=FINE_TUNED_MODEL,
                     messages=[
                         {"role": "system", "content": "You are Adam, a crypto casino reviewer with a sharp, conversational tone and honest takes."},
