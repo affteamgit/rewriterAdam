@@ -10,17 +10,14 @@ client = OpenAI(api_key=api_key)
 FINE_TUNED_MODEL = "ft:gpt-3.5-turbo-1106:affiliation:adam03:BqMOgUiJ"
 
 def parse_review_sections(content):
-    """Parse review content into sections based on headers."""
-    # Common section headers for reviews
-    section_patterns = [
-        r'(?i)^(general|overview|introduction).*$',
-        r'(?i)^(payments?|banking|deposits?|withdrawals?).*$',
-        r'(?i)^(games?|gaming|casino games?).*$',
-        r'(?i)^(responsible gambling|player protection|safety).*$',
-        r'(?i)^(bonuses?|promotions?|offers?).*$',
-        r'(?i)^(customer support|support|help).*$',
-        r'(?i)^(mobile|app|mobile app).*$',
-        r'(?i)^(conclusion|final thoughts|verdict).*$'
+    """Parse review content into sections based on **Section Name** format."""
+    # The 5 sections in order: General, Payments, Games, Responsible Gambling, Bonuses
+    section_headers = [
+        "General",
+        "Payments", 
+        "Games",
+        "Responsible Gambling",
+        "Bonuses"
     ]
     
     lines = content.split('\n')
@@ -29,16 +26,12 @@ def parse_review_sections(content):
     current_content = []
     
     for line in lines:
-        line = line.strip()
-        if not line:
-            if current_content:
-                current_content.append('')
-            continue
-            
-        # Check if this line is a section header
+        line_stripped = line.strip()
+        
+        # Check if this line is a section header in **Section Name** format
         is_header = False
-        for pattern in section_patterns:
-            if re.match(pattern, line):
+        for header in section_headers:
+            if line_stripped == f"**{header}**":
                 # Save previous section if exists
                 if current_section and current_content:
                     sections.append({
@@ -47,7 +40,7 @@ def parse_review_sections(content):
                     })
                 
                 # Start new section
-                current_section = line
+                current_section = header
                 current_content = []
                 is_header = True
                 break
@@ -55,8 +48,8 @@ def parse_review_sections(content):
         # If not a header, add to current content
         if not is_header:
             if current_section is None:
-                # If no section header found yet, treat as introduction
-                current_section = "Introduction"
+                # Skip content before the first section header
+                continue
             current_content.append(line)
     
     # Don't forget the last section
